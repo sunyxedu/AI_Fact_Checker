@@ -41,13 +41,13 @@ def video(video_id):
 def extract_statements(youtube_video_url: str) -> List[Statement]:
     video_id = youtube_video_url.split("v=")[1]
     ls = video(video_id)
-    print(ls)
-    print("-------")
+    # print(ls)
+    # print("-------")
     str = ""
     for i in range(len(ls)):
         str = str + ls[i][1] + " "
-    print(str)
-    print("-------")
+    # print(str)
+    # print("-------")
     # Use LLM to extract factual statements
 
     # Initialize LLM
@@ -82,8 +82,8 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
     function_call_response = response.choices[0].message.function_call.arguments
     result = json.loads(function_call_response)
     statements_text = result["statements"]
-    print(statements_text)
-    print("-------")
+    # print(statements_text)
+    # print("-------")
     sentences = statements_text
 
     # print("-------SENTENCES-------")
@@ -100,22 +100,26 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
             pos = str.find(s)
             if pos != -1:
                 statements_with_positions.append((s, pos))
-    
+                
     # Sort statements by position
-    print(unique_statements)
+    # print(unique_statements)
     statements_with_positions.sort(key=lambda x: x[1])
     print(statements_with_positions)
     # unique_statements = [s[0] for s in statements_with_positions]
     
     
     acc = ""
+    statements_with_timestamps = []
     id = 0
     for QwQ in ls:
         acc = acc + QwQ[1] + " "
-        if (len(acc) > statements_with_positions[id]):
-            
-    # return statements
-    # return ls
+        if (len(acc) > statements_with_positions[id][1]):
+            statements_with_timestamps.append(Statement(statements_with_positions[id][0], QwQ[0]))
+            id += 1
+            if (id == len(statements_with_positions)):
+                break
+    print(statements_with_timestamps)
+    return statements_with_timestamps
 
 if __name__ == "__main__":
     extract_statements("https://www.youtube.com/watch?v=ShRYdYTtIx8")
