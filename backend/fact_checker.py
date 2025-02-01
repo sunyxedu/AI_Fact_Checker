@@ -3,11 +3,16 @@ from statement_extractor import Statement
 from dataclasses import dataclass
 from typing import List
 
-@dataclass
-class FactCheckedStatement:
-    truthiness: float # Score from 0 to 1, could be enum maybe
-    statement: str    
 
+"""
+We take a list of Statements from the YouTube video and compute
+truthiness scores for all of them using a mixture of methods.
 
-def fact_check(video_with_statements: List[Statement]) -> List[FactCheckedStatement]:
+For simple cases, we can rely on an LLM to determine truthiness. If it
+determines that the issue is controversial or confusing we can
+fall back to Wikipedia and Google Fact Check API.
+
+Outputs should be normalised floats between 0 and 1.
+"""
+def fact_check(statements: List[Statement]) -> List[float]:
     ...
