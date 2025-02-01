@@ -1,21 +1,28 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import FlowComponent from './FlowComponent';
 import NestedFlowComponent from './NestedFlowComponent';
-
+import DoubleNestedFlowComponent from './DoubleNestedFlowComponent';
 import { useNavigate } from 'react-router-dom';
 
 const exampleJson = {
   nodes: [1,2,3,4,5,6,7,8,9],
-  node_names: ["A", "B", "C", "D", "E", "F", "G", "H", "I"],
+  node_names: ["Mexicans", "Black People", "White People", "Asians", "Indians", "Middle Easterners", "Latin Americans", "African Americans", "Native Americans"],
   severity: [1,2,3,4,5,1,2,3,1],
-  edges: [[1,2], [2,3], [1,3], [1,5],[1,6],[6,7],[7,8],[8,9]]
+  edges: []
 };
 
 const exampleJson2 = {
-  nodes: [1,2,3,4,5,6,7,8,9,10,11,12],
-  node_names: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L"],
-  severity: [1,2,3,4,5,1,2,3,1,2,3,1],
-  edges: [[1,2], [2,3], [1,3], [1,5],[1,6],[6,7],[7,8],[8,9],[9,10],[10,11],[11,12]]
+  nodes: [1,2,3,4,5,6],
+  node_names: ["random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
+  severity: [1,2,3,4,5,1],
+  edges: [[1,2], [4,3], [1,3], [4,5], [1,6]]
+};
+
+const exampleJson3 = {
+  nodes: [1,2,3,4,5],
+  node_names: ["link", "link", "link", "link", "link"],
+  severity: [1,2,3,4,5],
+  edges: [[1,2], [2,3], [3,4], [4,5]]
 };
 
 interface NestedNodePageProps {
@@ -32,6 +39,17 @@ function NestedNodePage({ data }: NestedNodePageProps) {
     </div>
   );
 }
+function DoubleNestedNodePage({ data }: NestedNodePageProps) {
+  const navigate = useNavigate();
+  
+  return (
+    <div>
+      <button onClick={() => navigate(-1)}>Back</button>
+      <DoubleNestedFlowComponent data={data} />
+    </div>
+  );
+}
+
 
 function App() {
   return (
@@ -41,6 +59,10 @@ function App() {
         <Route 
           path="/node/:nodeId" 
           element={<NestedNodePage data={exampleJson2} />} 
+        />
+        <Route 
+          path="/node/:nodeId/subnode/:subnodeId" 
+          element={<DoubleNestedNodePage data={exampleJson3} />} 
         />
       </Routes>
     </BrowserRouter>

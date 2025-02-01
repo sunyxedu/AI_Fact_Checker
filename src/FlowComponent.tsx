@@ -4,13 +4,12 @@ import 'reactflow/dist/style.css';
 import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY } from 'd3-force';
 import { useNavigate } from 'react-router-dom';
 
-
 const severityDict: { [key: number]: string } = {
-  1: "#ffb700",
-  2: "#ffa325",
-  3: "#f77d19",
-  4: "#f74919",
-  5: "#ae1e0f"
+  1: "#cc8f00", // Darker yellow-orange
+  2: "#cc6e00", // Darker orange
+  3: "#b3540d", // Darker reddish-orange
+  4: "#992e0d", // Darker red
+  5: "#7a1509"  // Darker deep red
 };
 
 interface FlowComponentProps {
@@ -24,17 +23,17 @@ interface FlowComponentProps {
 
 const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
   const nodes = jsonData.nodes.map((nodeId, index) => ({
-    id: nodeId.toString(), //All stuff below is conditional on id = 0 for parent node
-    x: index === 0 ? 0 : Math.random() * 800 - 400, //puts in random position and lets electrostatic repulsion do the rest
+    id: nodeId.toString(),
+    x: index === 0 ? 0 : Math.random() * 800 - 400,
     y: index === 0 ? 0 : Math.random() * 800 - 400,
     data: { label: jsonData.node_names[index] },
     style: {
       backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
       color: 'white',
-      width: index === 0 ? 180 : 120,
-      height: index === 0 ? 180 : 120,
-      borderRadius: index === 0 ? '50%' : '15%',
-      fontSize: index === 0 ? '1.4rem' : '1rem',
+      width: 120,
+      height: 120,
+      borderRadius: '15%',
+      fontSize: '1rem',
       border: '2px solid #fff',
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
     }
@@ -45,11 +44,10 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     target: target.toString()
   }));
 
-  // Create force simulation
   forceSimulation(nodes as any)
-    .force('charge', forceManyBody().strength(-1500)) //this is the level of repulsion between nodes
+    .force('charge', forceManyBody().strength(-1500))
     .force('link', forceLink(links).id(d => (d as any).id).distance(300))
-    .force('collide', forceCollide().radius(100).strength(1)) //this makes it so that each node acts as a body of mass to prevent intersections
+    .force('collide', forceCollide().radius(100).strength(1))
     .force('x', forceX().strength(0.02))
     .force('y', forceY().strength(0.02))
     .stop()

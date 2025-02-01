@@ -31,10 +31,10 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     style: {
       backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
       color: 'white',
-      width: index === 0 ? 180 : 120,
-      height: index === 0 ? 180 : 120,
-      borderRadius: index === 0 ? '50%' : '15%',
-      fontSize: index === 0 ? '1.4rem' : '1rem',
+      width:  120,
+      height:  120,
+      borderRadius: '15%',
+      fontSize:  '1rem',
       border: '2px solid #fff',
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
     }
@@ -75,11 +75,11 @@ const createEdges = (jsonData: FlowComponentProps['data']): Edge[] => {
   }));
 };
 
-export default function FlowComponent({ data }: FlowComponentProps) {
+export default function NestedFlowComponent({ data }: FlowComponentProps) {
   const navigate = useNavigate();
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-    navigate(`/node/${node.id}`);
+    navigate(`subnode/${node.id}`);
   };
 
   const initialNodes = createNodes(data);
@@ -96,6 +96,7 @@ export default function FlowComponent({ data }: FlowComponentProps) {
         <Background color="#404040" gap={24} />
         <Controls />
       </ReactFlow>
+      <button onClick={() => navigate(-1)}>Back</button>
     </div>
   );
 } 
