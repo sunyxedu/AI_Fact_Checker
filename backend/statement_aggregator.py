@@ -21,4 +21,8 @@ The final truthiness' and Severity scores should be aggregated by doing batch av
 Summaries can be generated using an LLM.
 """
 def aggregate_statements(statements: List[Statement], truth_scores: List[float], severity_scores: List[float]) -> List[Misinformation]:
-    ...
+    # We correspond statements, truth scores and severity scores by indices
+    # Embed the list of statements into some embedding space
+    # Perform KNN over the statements to then
+    
+    # Average over the severity and truthiness in each Statement
