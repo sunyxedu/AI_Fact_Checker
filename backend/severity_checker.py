@@ -30,7 +30,8 @@ We need to assess downstraem impact of the low-truth statement.
 We return a normalised float between 0 and 1.
 """
 def check_severity(fact_checked_statements: List[Statement]) -> List[Tuple[float, OriginDAG]]:
-    ...
+    for statement in fact_checked_statements:
+        
     # for each statement:
     #   Compute DAG of Articles for Statement <- where we got the statement from
     #   return float
