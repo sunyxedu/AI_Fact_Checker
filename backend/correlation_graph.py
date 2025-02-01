@@ -8,10 +8,8 @@ load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
 def correlation_graph(check, data):
-    # [['2024-xxxxxx','Fox new Trump said ....'], ['2025-1-1', 'Trump xxxxx']]
-    # Data Type: timestamp + info
-    # Sort data by timestamp
-    data = sorted(data, key=lambda x: x[0])
+    # Sort articles by timestamp
+    data = sorted(data, key=lambda x: x.timestamp)
     
     # Initialize result structure
     result = {
@@ -31,7 +29,7 @@ def correlation_graph(check, data):
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are an expert at analyzing misinformation."},
-                {"role": "user", "content": f"Analyze this text: {data[i][1]}"}
+                {"role": "user", "content": f"Analyze this text: {data[i].text}"}
             ],
             functions=[{
                 "name": "analyze_misinformation", 
@@ -62,15 +60,15 @@ def correlation_graph(check, data):
         severity = int(result_analysis["severity"])
         
         result["nodes"].append(i)
-        result["nodename"].append(f"{publisher}\n{data[i][0]}")
+        result["nodename"].append(f"{publisher}\n{data[i].timestamp}")
         result["severity"].append(severity)
     
     # Find correlations and build edge relationships
     for i in range(len(data)):
         for j in range(i+1, len(data)):
             # Extract info for items i and j
-            info_i = data[i][1]
-            info_j = data[j][1]
+            info_i = data[i].text
+            info_j = data[j].text
             
             # Calculate correlation using OpenAI API
             response = client.chat.completions.create(
@@ -89,10 +87,17 @@ def correlation_graph(check, data):
     return result
 
 if __name__ == "__main__":
+    from dataclasses import dataclass
+
+    @dataclass
+    class Article:
+        timestamp: str
+        text: str
+
     result = correlation_graph("bitcoin is a scam", [
-        [0, "CNN Bitcoin price surges past $50,000 for first time since 2021"],
-        [1, "Reuters Bitcoin miners struggle with rising energy costs"],
-        [2, "Bloomberg Major investment firm launches Bitcoin ETF"],
-        [3, "Cryptocurrency market sees increased volatility"]
+        Article("2024-01-01", "CNN Bitcoin price surges past $50,000 for first time since 2021"),
+        Article("2024-01-02", "Reuters Bitcoin miners struggle with rising energy costs"),
+        Article("2024-01-03", "Bloomberg Major investment firm launches Bitcoin ETF"),
+        Article("2024-01-04", "Cryptocurrency market sees increased volatility")
     ])
     print(json.dumps(result, indent=2))
