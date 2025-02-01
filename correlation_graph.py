@@ -1,9 +1,11 @@
 import openai
 from dotenv import load_dotenv
 import os
+import json
 import networkx as nx
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
+from openai import OpenAI
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
@@ -29,27 +31,45 @@ def correlation_graph(check, data):
     # Add nodes with publisher names and severity levels
     node_colors = []
     for i in range(len(data)):
+        # Initialize the client
+        client = OpenAI()
+        
         # Extract publisher and analyze severity using OpenAI
-        response = openai.ChatCompletion.create(
-            model="gpt-4o",
+        response = client.chat.completions.create(
+            model="gpt-4",
             messages=[
                 {"role": "system", "content": "You are an expert at analyzing misinformation."},
-                {"role": "user", "content": f"""Analyze this text: {data[i][1]}
-                1. Extract the publisher name
-                2. Rate the severity of misinformation on a scale of 1-5 where:
-                   1 = Factual/No misinformation
-                   2 = Slight inaccuracies
-                   3 = Moderate misinformation
-                   4 = Significant misinformation
-                   5 = Severe misinformation/Complete fabrication
-                Respond in format: 'Publisher|SeverityLevel'"""}
-            ]
+                {"role": "user", "content": f"Analyze this text: {data[i][1]}"}
+            ],
+            functions=[{
+                "name": "analyze_misinformation", 
+                "description": "Analyzes text for publisher and misinformation severity",
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "publisher": {
+                            "type": "string",
+                            "description": "The publisher name (Unknown if not found)"
+                        },
+                        "severity": {
+                            "type": "integer", 
+                            "description": "Misinformation severity rating from 1-5",
+                            "enum": [1, 2, 3, 4, 5]
+                        }
+                    },
+                    "required": ["publisher", "severity"]
+                }
+            }],
+            function_call={"name": "analyze_misinformation"}
         )
+        # Parse the function call response
+        function_call_response = response.choices[0].message.function_call.arguments
+        result = json.loads(function_call_response)
+        publisher = result["publisher"]
+        print(publisher)
+        severity = int(result["severity"])
         
-        publisher, severity = response.choices[0].message.content.strip().split('|')
-        severity = int(severity)
-        
-        G.add_node(i, label=publisher, severity=severity)
+        G.add_node(i, label=f"{publisher}\n{data[i][0]}", severity=severity)
         node_colors.append(severity_colors[severity])
     
     # Add edges for correlations
@@ -60,8 +80,8 @@ def correlation_graph(check, data):
             info_j = data[j][1]
             
             # Calculate correlation using OpenAI API
-            response = openai.ChatCompletion.create(
-                model="gpt-4o",
+            response = client.chat.completions.create(
+                model="gpt-4",
                 messages=[
                     {"role": "system", "content": "You are a correlation analyzer."},
                     {"role": "user", "content": f"Is there a correlation between these two articles about {check}? First article: {info_i}, Second article: {info_j}. Respond with only 'yes' or 'no'."}
@@ -76,7 +96,7 @@ def correlation_graph(check, data):
     pos = nx.spring_layout(G)
     plt.figure(figsize=(12,8))
     nx.draw(G, pos, with_labels=True, node_color=node_colors,
-            node_size=1500, arrowsize=20)
+            node_size=2000, arrowsize=20)
     
     labels = nx.get_node_attributes(G, 'label')
     nx.draw_networkx_labels(G, pos, labels)
@@ -92,6 +112,12 @@ def correlation_graph(check, data):
     plt.title(f"Correlation Graph for {check}")
     plt.tight_layout()
     plt.show()
+    return G
     
 if __name__ == "__main__":
-    correlation_graph("bitcoin", [[]])
+    correlation_graph("bitcoin is a scam", [
+        [0, "CNN Bitcoin price surges past $50,000 for first time since 2021"],
+        [1, "Reuters Bitcoin miners struggle with rising energy costs"],
+        [2, "Bloomberg Major investment firm launches Bitcoin ETF"],
+        [3, "Cryptocurrency market sees increased volatility"]
+    ])
