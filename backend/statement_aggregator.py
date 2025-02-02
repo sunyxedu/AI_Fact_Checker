@@ -1,4 +1,3 @@
-from severity_checker import CheckedStatement
 from statement_extractor import Statement
 from dataclasses import dataclass
 from typing import List
@@ -72,7 +71,8 @@ def aggregate_statements(statements: List[Statement], truth_scores: List[float],
     
     plt.tight_layout()
     plt.savefig('statement_clusters.png')
-    plt.close()
+    plt.show()
+    # plt.close()
     
     # Aggregate results by cluster
     misinformation_list = []
