@@ -28,13 +28,13 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     y: index === 0 ? 0 : Math.random() * 800 - 400,
     data: { label: jsonData.node_names[index] },
     style: {
-      backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
+      backgroundColor: '#000',
       color: 'white',
       width: 120,
       height: 120,
       borderRadius: '15%',
       fontSize: '1rem',
-      border: '2px solid #fff',
+      border: '2px solid ' + severityDict[jsonData.severity[index] as keyof typeof severityDict],
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
     }
   }));

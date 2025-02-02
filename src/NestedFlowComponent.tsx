@@ -31,10 +31,10 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     style: {
       backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
       color: 'white',
-      width:  120,
-      height:  120,
-      borderRadius: '15%',
-      fontSize:  '1rem',
+      width: index === 0 ? 150 :120,
+      height: index === 0 ? 150 :120,
+      borderRadius: index === 0 ? '50%' : '15%',
+      fontSize: index === 0 ? '1.5rem' : '1rem',
       border: '2px solid #fff',
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
     }

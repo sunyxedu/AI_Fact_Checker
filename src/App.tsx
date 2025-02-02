@@ -15,7 +15,7 @@ const exampleJson2 = {
   nodes: [1,2,3,4,5,6],
   node_names: ["random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
   severity: [1,2,3,4,5,1],
-  edges: [[1,2], [4,3], [1,3], [4,5], [1,6]]
+  edges: [[1,2], [1,3], [1,4], [1,5], [1,6]]
 };
 
 const exampleJson3 = {

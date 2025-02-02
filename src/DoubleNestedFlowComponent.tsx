@@ -34,7 +34,7 @@ const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] =
       width: 120,
       height: 120,
       borderRadius:  '15%',
-      fontSize: '1rem',
+      fontSize:  '1rem',
       border: '2px solid #fff',
       boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
     }
