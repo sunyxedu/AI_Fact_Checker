@@ -39,4 +39,4 @@ ENV/
 Thumbs.db 
 
 # NPM
-node_modules/*
+node_modules/
