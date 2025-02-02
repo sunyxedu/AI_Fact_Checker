@@ -5,6 +5,8 @@ from typing import List
 from sklearn.cluster import KMeans
 import numpy as np
 from statement_extractor import extract_statements
+import matplotlib.pyplot as plt
+from sklearn.manifold import TSNE
 
 @dataclass
 class Misinformation:
@@ -50,6 +52,27 @@ def aggregate_statements(statements: List[Statement], truth_scores: List[float],
     # Perform final clustering
     kmeans = KMeans(n_clusters=optimal_clusters, random_state=42)
     cluster_labels = kmeans.fit_predict(statements_embeddings)
+    
+    # Project embeddings to 2D using t-SNE
+    tsne = TSNE(n_components=2, random_state=42)
+    embeddings_2d = tsne.fit_transform(statements_embeddings)
+    
+    # Plot the clusters
+    plt.figure(figsize=(10, 8))
+    scatter = plt.scatter(embeddings_2d[:, 0], embeddings_2d[:, 1], 
+                         c=cluster_labels, cmap='viridis',
+                         alpha=0.6)
+    plt.title('Statement Clusters Visualization')
+    plt.colorbar(scatter, label='Cluster')
+    
+    # Add statement texts as annotations
+    for i, txt in enumerate(statements_text):
+        plt.annotate(txt[:30] + "...", (embeddings_2d[i, 0], embeddings_2d[i, 1]),
+                    fontsize=8, alpha=0.7)
+    
+    plt.tight_layout()
+    plt.savefig('statement_clusters.png')
+    plt.close()
     
     # Aggregate results by cluster
     misinformation_list = []
