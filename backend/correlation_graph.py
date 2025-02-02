@@ -19,6 +19,7 @@ def correlation_graph(check, data: List[Article]):
         "nodes": [],
         "nodename": [],
         "severity": [],
+        "urls": [],
         "edge": []
     }
     
@@ -40,10 +41,6 @@ def correlation_graph(check, data: List[Article]):
                 "parameters": {
                     "type": "object",
                     "properties": {
-                        "publisher": {
-                            "type": "string",
-                            "description": "The publisher name (Unknown if not found)."
-                        },
                         "severity": {
                             "type": "integer", 
                             "description": "Misinformation severity rating from 1-5",
@@ -62,14 +59,13 @@ def correlation_graph(check, data: List[Article]):
         # Parse the function call response
         function_call_response = response.choices[0].message.function_call.arguments
         result_analysis = json.loads(function_call_response)
-        publisher = result_analysis["publisher"]
         summary = result_analysis["summary"]
         print(summary)
         severity = int(result_analysis["severity"])
         
         result["nodes"].append(i)
         result["nodename"].append(f"{summary}\n{data[i].timestamp}")
-        result["url"] = data[i].url
+        result["urls"].append(data[i].url)
         result["severity"].append(severity)
     
     # Find correlations and build edge relationships
