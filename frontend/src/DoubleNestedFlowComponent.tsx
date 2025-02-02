@@ -18,10 +18,10 @@ const severityDict: { [key: number]: string } = {
 interface DoubleNestedFlowComponentProps {
   data: {
     nodes: number[];
-    node_names: string[];
-    severity: number[];
-    edges: number[][];
-    links: string[];
+    nodename: string[];
+    severities: number[];
+    urls: string[];
+    edge: number[][];
   };
 }
 
@@ -41,7 +41,8 @@ const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] =
     type: 'custom',
     position: { x: 0, y: 0 },
     data: {
-      label: jsonData.node_names[index],
+      label: jsonData.nodename[index],
+      url: jsonData.urls?.[index] || '',
       style: {
         backgroundColor: '#000',
         color: 'white',
@@ -49,13 +50,13 @@ const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] =
         height: 120,
         borderRadius: '15%',
         fontSize: '1rem',
-        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        border: `3px solid ${severityDict[jsonData.severities[index] as keyof typeof severityDict]}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
       }
     }
   }));
 
-  const links = jsonData.edges.map(([source, target]) => ({
+  const links = (jsonData.edge || []).map(([source, target]) => ({
     source: source.toString(),
     target: target.toString()
   }));
@@ -77,13 +78,13 @@ const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] =
 };
 
 const createEdges = (jsonData: DoubleNestedFlowComponentProps['data']): Edge[] => {
-  return jsonData.edges.map(([source, target], index) => ({
+  return (jsonData.edge || []).map(([source, target], index) => ({
     id: `edge-${source}-${target}-${index}`,
     source: source.toString(),
     target: target.toString(),
     sourceHandle: 'center',
     targetHandle: 'center',
-    type: 'centeredArrow',  // Use custom edge type
+    type: 'centeredArrow',
     style: {
       stroke: '#fff',
       strokeWidth: 2,
@@ -99,8 +100,10 @@ export default function DoubleNestedFlowComponent({ data }: DoubleNestedFlowComp
   const [edges, setEdges] = useState<Edge[]>([]);
   
   useEffect(() => {
-    setNodes(createNodes(data));
-    setEdges(createEdges(data));
+    if (data) {
+      setNodes(createNodes(data));
+      setEdges(createEdges(data));
+    }
   }, [data]);
 
   const onNodesChange = useCallback(
@@ -109,8 +112,11 @@ export default function DoubleNestedFlowComponent({ data }: DoubleNestedFlowComp
   );
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-    // If you want to go deeper
-    navigate(`subsubnode/${node.id}`); 
+    // Get URL from node data using the node index
+    const nodeIndex = data.nodes.indexOf(Number(node.id));
+    if (nodeIndex !== -1 && data.urls?.[nodeIndex]) {
+      window.open(data.urls[nodeIndex], '_blank');
+    }
   };
 
   return (

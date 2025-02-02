@@ -40,21 +40,20 @@ const exampleTitle = {header: "Youtube Video: Trump Inauguration"}
 interface NestedNodePageProps {
   data: {
     nodes: number[];
-    node_names: string[];
-    severity: number[];
+    text: string[];
+    dates: number[];
     edges: number[][];
-    node_name: string;
   };
 }
 
 interface DoubleNestedNodePageProps {
   data: {
     nodes: number[];
-    node_names: string[];
-    severity: number[];
-    edges: number[][];
-    node_name: string;
-    links: string[];
+    nodename: string[];
+    severities: number[];
+    urls: string[];
+    edge: number[][];
+    
   };
 }
 
@@ -83,26 +82,26 @@ function DoubleNestedNodePage({ data }: DoubleNestedNodePageProps) {
 function AnimatedRoutes() {
   const [jsonLvl1, setJsonLvl1] = useState({
     nodes: [],
-    node_names: [],
-    severity: [],
+    names: [],
+    severities: [],
+    truthieness: [],
     edges: []
   });
 
   const [jsonLvl2, setJsonLvl2] = useState({
     nodes: [],
-    node_names: [],
-    severity: [],
-    edges: [],
-    node_name: []
+    text: [],
+    dates: [],
+    edges: []
   });
 
   const [jsonLvl3, setJsonLvl3] = useState({
     nodes: [],
-    node_names: [],
-    severity: [],
-    edges: [],
-    node_name: [],
-    link: []
+    nodename: [],
+    severities: [],
+    urls: [],
+    edge: []
+    
   });
 
   const [titleData, setTitleData] = useState({
@@ -114,7 +113,7 @@ function AnimatedRoutes() {
   
   const fetchJsonLvl1 = async () => {
     try {
-      const response = await fetch('http://localhost:5000/node_lvl_1');
+      const response = await fetch('http://localhost:5000/misinformation/');
       const data = await response.json();
       setJsonLvl1(data);
     } catch (error) {
@@ -122,9 +121,9 @@ function AnimatedRoutes() {
     }
   };
 
-  const fetchJsonLvl2 = async () => {
+  const fetchJsonLvl2 = async (node_id: number) => {
     try {
-      const response = await fetch('http://localhost:5000/node_lvl_2');
+      const response = await fetch('http://localhost:5000/statement' +  "/"+String(node_id));// + "/{node_id}
       const data = await response.json();
       setJsonLvl2({
         ...data,
@@ -135,9 +134,9 @@ function AnimatedRoutes() {
     }
   };
 
-  const fetchJsonLvl3 = async () => {
+  const fetchJsonLvl3 = async (node_id: number) => {
     try {
-      const response = await fetch('http://localhost:5000/node_lvl_3');
+      const response = await fetch('http://localhost:5000/provinence' +  "/"+String(node_id));
       const data = await response.json();
       setJsonLvl3(data);
     } catch (error) {
@@ -166,8 +165,8 @@ function AnimatedRoutes() {
 
   useEffect(() => {
     fetchJsonLvl1();
-    fetchJsonLvl2();
-    fetchJsonLvl3();
+    fetchJsonLvl2(0);
+    fetchJsonLvl3(0);
     fetchTitleData();
   }, [location.pathname]);
 
@@ -175,7 +174,7 @@ function AnimatedRoutes() {
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
         <Route 
-          path="/" 
+          path=  "/" 
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -188,7 +187,7 @@ function AnimatedRoutes() {
           } 
         />
         <Route 
-          path="/node/:nodeId" 
+          path="/misinformation/:nodeId" 
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -201,7 +200,7 @@ function AnimatedRoutes() {
           } 
         />
         <Route 
-          path="/node/:nodeId/subnode/:subnodeId" 
+          path="/misinformation/:nodeId/subnode/:subnodeId" 
           element={
             <motion.div
               initial={{ opacity: 0 }}
@@ -213,6 +212,7 @@ function AnimatedRoutes() {
             </motion.div>
           } 
         />
+        <Route path="/video_url" element={<div>{titleData.videoUrl}</div>} />
       </Routes>
     </AnimatePresence>
   );
