@@ -5,26 +5,28 @@ const scaleTextToFit = (element: HTMLElement) => {
   const container = element.parentElement;
   if (!container) return;
 
-  let fontSize = parseFloat(getComputedStyle(element).fontSize);
-  const minFontSize = 8;
-  const maxFontSize = 24;
-  
-  while (
-    (element.scrollHeight > container.clientHeight || 
-     element.scrollWidth > container.clientWidth) && 
-    fontSize > minFontSize
-  ) {
-    fontSize -= 0.5;
-    element.style.fontSize = `${fontSize}px`;
-  }
+  if (container && container.style) {
+    let fontSize = parseFloat(getComputedStyle(element).fontSize);
+    const minFontSize = 8;
+    const maxFontSize = 24;
+    
+    while (
+      (element.scrollHeight > container.clientHeight || 
+       element.scrollWidth > container.clientWidth) && 
+      fontSize > minFontSize
+    ) {
+      fontSize -= 0.5;
+      element.style.fontSize = `${fontSize}px`;
+    }
 
-  while (
-    (element.scrollHeight < container.clientHeight * 0.9 && 
-     element.scrollWidth < container.clientWidth * 0.9) && 
-    fontSize < maxFontSize
-  ) {
-    fontSize += 0.5;
-    element.style.fontSize = `${fontSize}px`;
+    while (
+      (element.scrollHeight < container.clientHeight * 0.9 && 
+       element.scrollWidth < container.clientWidth * 0.9) && 
+      fontSize < maxFontSize
+    ) {
+      fontSize += 0.5;
+      element.style.fontSize = `${fontSize}px`;
+    }
   }
 };
 
@@ -71,8 +73,38 @@ export default memo(({ data }: NodeProps) => {
         >
           {data.label}
         </div>
-        <Handle type="target" position={Position.Left} />
-        <Handle type="source" position={Position.Right} />
+        <Handle
+          type="source"
+          position={Position.Top}
+          id="center"
+          style={{ 
+            background: 'transparent',
+            width: 10,
+            height: 10,
+            border: '2px solid #fff',
+            borderRadius: '50%',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            opacity: 0,
+          }}
+        />
+        <Handle
+          type="target"
+          position={Position.Top}
+          id="center"
+          style={{ 
+            background: 'transparent',
+            width: 10,
+            height: 10,
+            border: '2px solid #fff',
+            borderRadius: '50%',
+            left: '50%',
+            top: '50%',
+            transform: 'translate(-50%, -50%)',
+            opacity: 0,
+          }}
+        />
       </div>
     </div>
   );

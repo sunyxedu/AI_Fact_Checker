@@ -22,6 +22,7 @@ const exampleJson2 = {
   nodes: [1,2,3,4,5,6],
   node_names: ["random quote bla blaasdasd asdasdasdasdasdasdasda sdasdasdasdasdasdasdasdasdasd", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
   severity: [1,2,3,4,5,1],
+  node_name: [""],
   edges: [[1,2], [1,3], [1,4], [1,5], [1,6]]
 };
 
@@ -29,13 +30,32 @@ const exampleJson3 = {
   nodes: [1,2,3,4,5],
   node_names: ["link", "link", "link", "link", "link"],
   severity: [1,2,3,4,5],
-  edges: [[1,2], [2,3], [3,4], [4,5]]
+  edges: [[1,2], [2,3], [3,4], [4,5]],
+  node_name: [""],
+  links: ["link", "link", "link", "link", "link"]
 };
 
 const exampleTitle = {header: "Youtube Video: Trump Inauguration"}
 
 interface NestedNodePageProps {
-  data: typeof exampleJson2;
+  data: {
+    nodes: number[];
+    node_names: string[];
+    severity: number[];
+    edges: number[][];
+    node_name: string;
+  };
+}
+
+interface DoubleNestedNodePageProps {
+  data: {
+    nodes: number[];
+    node_names: string[];
+    severity: number[];
+    edges: number[][];
+    node_name: string;
+    links: string[];
+  };
 }
 
 function NestedNodePage({ data }: NestedNodePageProps) {
@@ -48,7 +68,8 @@ function NestedNodePage({ data }: NestedNodePageProps) {
     </div>
   );
 }
-function DoubleNestedNodePage({ data }: NestedNodePageProps) {
+
+function DoubleNestedNodePage({ data }: DoubleNestedNodePageProps) {
   const navigate = useNavigate();
   
   return (
@@ -85,7 +106,8 @@ function AnimatedRoutes() {
   });
 
   const [titleData, setTitleData] = useState({
-    header: ""
+    header: "",
+    videoUrl: ""
   });
 
   const location = useLocation();
@@ -104,7 +126,10 @@ function AnimatedRoutes() {
     try {
       const response = await fetch('http://localhost:5000/node_lvl_2');
       const data = await response.json();
-      setJsonLvl2(data);
+      setJsonLvl2({
+        ...data,
+        node_name: data.node_name || ""
+      });
     } catch (error) {
       console.error('Error fetching level 2 data:', error);
     }
@@ -122,9 +147,18 @@ function AnimatedRoutes() {
 
   const fetchTitleData = async () => {
     try {
-      const response = await fetch('http://localhost:5000/lvl_2_title');
-      const data = await response.json();
-      setTitleData(data);
+      const [titleRes, urlRes] = await Promise.all([
+        fetch('http://localhost:5000/lvl_2_title'),
+        fetch('http://localhost:5000/video_url')
+      ]);
+      
+      const titleData = await titleRes.json();
+      const urlData = await urlRes.json();
+      
+      setTitleData({
+        header: titleData.header,
+        videoUrl: urlData.url
+      });
     } catch (error) {
       console.error('Error fetching title data:', error);
     }

@@ -1,9 +1,10 @@
-import React from 'react';
-import ReactFlow, { Controls, Background, Node, Edge } from 'reactflow';
+import React, { useState, useCallback, useEffect } from 'react';
+import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY } from 'd3-force';
 import { useNavigate } from 'react-router-dom';
 import CustomNode from './CustomNode';
+import CenteredArrowEdge from './CenteredArrowEdge';
 
 
 const severityDict: { [key: number]: string } = {
@@ -20,12 +21,18 @@ interface DoubleNestedFlowComponentProps {
     node_names: string[];
     severity: number[];
     edges: number[][];
+    links: string[];
   };
 }
 
 // Add node types configuration
 const nodeTypes = {
   custom: CustomNode,
+};
+
+// Add edge types configuration
+const edgeTypes = {
+  centeredArrow: CenteredArrowEdge,
 };
 
 const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] => {
@@ -74,6 +81,9 @@ const createEdges = (jsonData: DoubleNestedFlowComponentProps['data']): Edge[] =
     id: `edge-${source}-${target}-${index}`,
     source: source.toString(),
     target: target.toString(),
+    sourceHandle: 'center',
+    targetHandle: 'center',
+    type: 'centeredArrow',  // Use custom edge type
     style: {
       stroke: '#fff',
       strokeWidth: 2,
@@ -85,21 +95,33 @@ const createEdges = (jsonData: DoubleNestedFlowComponentProps['data']): Edge[] =
 
 export default function DoubleNestedFlowComponent({ data }: DoubleNestedFlowComponentProps) {
   const navigate = useNavigate();
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  
+  useEffect(() => {
+    setNodes(createNodes(data));
+    setEdges(createEdges(data));
+  }, [data]);
+
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     // If you want to go deeper
     navigate(`subsubnode/${node.id}`); 
   };
 
-  const initialNodes = createNodes(data);
-  const initialEdges = createEdges(data);
-
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
       <ReactFlow 
-        nodes={initialNodes}
-        edges={initialEdges}
+        nodes={nodes}
+        edges={edges}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
+        onNodesChange={onNodesChange}
+        nodesDraggable={true}
         onNodeClick={handleNodeClick}
         fitView
       >

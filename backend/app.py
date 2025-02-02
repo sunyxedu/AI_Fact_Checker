@@ -53,9 +53,7 @@ graph_data_lvl_2 = {
         [1, 5],
         [1, 6]
     ],
-    "node_name": [
-        "Quotes"
-    ]
+    "node_name": "Quotes"
 }
 
 graph_data_lvl_3 = {
@@ -76,14 +74,13 @@ graph_data_lvl_3 = {
         [4, 5],
         [1, 6]
     ],
-    "node_name": [
-        "Name of sourse"
-    ],
-    "link" : ["..."]
+    "node_name": "Name of source",
+    "links": ["https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://www.youtube.com/watch?v=dQw4w9WgXcQ","https://www.youtube.com/watch?v=dQw4w9WgXcQ"]
 }
 
 graph_title_data = {
-    "header": "Youtube Video: Trump Inauguration"
+    "header": "Youtube Video: Trump Inauguration",
+    "video_url": "https://www.youtube.com/watch?v=example_id"
 }
 
 @app.route('/node_lvl_1', methods=['GET'])
@@ -105,6 +102,11 @@ def get_data_lvl_3():
 @cache.cached(timeout=300)
 def get_title_data():
     return jsonify(graph_title_data)
+
+@app.route('/video_url')
+@cache.cached(timeout=300)
+def get_video_url():
+    return jsonify({"url": graph_title_data["video_url"]})
 
 if __name__ == '__main__':
     app.run(debug=True)
