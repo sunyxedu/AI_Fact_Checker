@@ -18,8 +18,8 @@ const severityDict: { [key: number]: string } = {
 interface FlowComponentProps {
   data: {
     nodes: number[];
-    node_names: string[];
-    severity: number[];
+    text: string[];
+    dates: number[];
     edges: number[][];
   };
 }
@@ -35,7 +35,8 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     type: 'custom',
     position: { x: 0, y: 0 },
     data: {
-      label: jsonData.node_names[index],
+      label: jsonData.text[index],
+      date: jsonData.dates[index],
       style: {
         backgroundColor: '#000',
         color: 'white',
@@ -43,7 +44,7 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
         height: index === 0 ? 150 : 120,
         borderRadius:  '15%',
         fontSize: index === 0 ? '1.5rem' : '1rem',
-        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        border: `3px solid ${severityDict[1]}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
       }
     }

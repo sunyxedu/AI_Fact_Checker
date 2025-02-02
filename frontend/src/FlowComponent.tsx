@@ -11,14 +11,15 @@ const severityDict: { [key: number]: string } = {
   2: "#cc6e00", // Darker orange
   3: "#b3540d", // Darker reddish-orange
   4: "#992e0d", // Darker red
-  5: "#7a1509"  // Darker deep red
+  5: "#ae1e0f"  // Brighter red (original #7a1509 lightened by 20%)
 };
 
 interface FlowComponentProps {
   data: {
     nodes: number[];
-    node_names: string[];
-    severity: number[];
+    names: string[];
+    severities: number[];
+    truthieness: number[];
     edges: number[][];
   };
   title: {
@@ -37,7 +38,8 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
     type: 'custom',
     position: { x: 0, y: 0 },
     data: {
-      label: jsonData.node_names[index],
+      label: jsonData.names[index],
+      sublabel: jsonData.truthieness[index],
       style: {
         backgroundColor: '#000',
         color: 'white',
@@ -45,7 +47,7 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
         height: 120,
         borderRadius: '15%',
         fontSize: '1rem',
-        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        border: `3px solid ${severityDict[jsonData.severities[index] as keyof typeof severityDict]}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
       }
     }
@@ -105,7 +107,7 @@ export default function FlowComponent({
   );
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-    navigate(`/node/${node.id}`);
+    navigate(`/misinformation/${node.id}`);
   };
 
   return (
@@ -202,7 +204,7 @@ export default function FlowComponent({
         nodesDraggable={true}
       >
         <Background 
-         color="#404040" gap={44} size={4} 
+         color="#303030" gap={44} size={4} 
         />
         <Controls 
           style={{

@@ -73,6 +73,25 @@ export default memo(({ data }: NodeProps) => {
         >
           {data.label}
         </div>
+        {data.sublabel && (
+          <div style={{ 
+            fontSize: '1em', 
+            fontWeight: 'bold',
+            color: data.style.border?.split(' ')[2] || '#fff'
+          }}>
+            {data.sublabel && `Truthiness: ${data.sublabel}`}
+          </div>
+        )}
+        {data.date && (
+          <div style={{
+            fontSize: '0.8em',
+            color: '#aaa',
+            marginTop: '4px'
+          }}>
+            Date: {data.date}
+          </div>
+        )}
+        
         <Handle
           type="source"
           position={Position.Top}
@@ -109,3 +128,4 @@ export default memo(({ data }: NodeProps) => {
     </div>
   );
 });
+
