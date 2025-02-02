@@ -3,6 +3,7 @@ import ReactFlow, { Controls, Background, Node, Edge } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY } from 'd3-force';
 import { useNavigate } from 'react-router-dom';
+import CustomNode from './CustomNode';
 
 
 const severityDict: { [key: number]: string } = {
@@ -22,21 +23,28 @@ interface FlowComponentProps {
   };
 }
 
+// Add node types configuration
+const nodeTypes = {
+  custom: CustomNode,
+};
+
 const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
   const nodes = jsonData.nodes.map((nodeId, index) => ({
-    id: nodeId.toString(), //All stuff below is conditional on id = 0 for parent node
-    x: index === 0 ? 0 : Math.random() * 800 - 400, //puts in random position and lets electrostatic repulsion do the rest
-    y: index === 0 ? 0 : Math.random() * 800 - 400,
-    data: { label: jsonData.node_names[index] },
-    style: {
-      backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
-      color: 'white',
-      width: index === 0 ? 180 : 120,
-      height: index === 0 ? 180 : 120,
-      borderRadius: index === 0 ? '50%' : '15%',
-      fontSize: index === 0 ? '1.4rem' : '1rem',
-      border: '2px solid #fff',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
+    id: nodeId.toString(),
+    type: 'custom',
+    position: { x: 0, y: 0 },
+    data: {
+      label: jsonData.node_names[index],
+      style: {
+        backgroundColor: '#000',
+        color: 'white',
+        width: index === 0 ? 150 : 120,
+        height: index === 0 ? 150 : 120,
+        borderRadius:  '15%',
+        fontSize: index === 0 ? '1.5rem' : '1rem',
+        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
+      }
     }
   }));
 
@@ -47,7 +55,7 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
 
   // Create force simulation
   forceSimulation(nodes as any)
-    .force('charge', forceManyBody().strength(-1500)) //this is the level of repulsion between nodes
+    .force('charge', forceManyBody().strength(-15000)) //this is the level of repulsion between nodes
     .force('link', forceLink(links).id(d => (d as any).id).distance(300))
     .force('collide', forceCollide().radius(100).strength(1)) //this makes it so that each node acts as a body of mass to prevent intersections
     .force('x', forceX().strength(0.02))
@@ -75,11 +83,11 @@ const createEdges = (jsonData: FlowComponentProps['data']): Edge[] => {
   }));
 };
 
-export default function FlowComponent({ data }: FlowComponentProps) {
+export default function NestedFlowComponent({ data }: FlowComponentProps) {
   const navigate = useNavigate();
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
-    navigate(`/node/${node.id}`);
+    navigate(`subnode/${node.id}`);
   };
 
   const initialNodes = createNodes(data);
@@ -90,12 +98,14 @@ export default function FlowComponent({ data }: FlowComponentProps) {
       <ReactFlow 
         nodes={initialNodes}
         edges={initialEdges}
+        nodeTypes={nodeTypes}
         onNodeClick={handleNodeClick}
         fitView
       >
-        <Background color="#404040" gap={24} />
+        <Background color="#404040" gap={44} size={4} />
         <Controls />
       </ReactFlow>
+      <button onClick={() => navigate(-1)}>Back</button>
     </div>
   );
 } 
