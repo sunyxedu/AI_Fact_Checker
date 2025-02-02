@@ -1,0 +1,46 @@
+# Fact Checking and Voice Recognition
+
+## Overview
+This project integrates voice recognition with fact-checking capabilities to convert speech to text, verify the accuracy of statements using multiple sources, and present the findings in a mind map format.
+
+## Features
+- **Speech-to-Text**: Converts spoken words into written text using advanced voice recognition technology.
+- **Fact-Checking**: Verifies the accuracy of transcribed statements by cross-referencing multiple reliable sources.
+- **Data Presentation**: Organizes fact-checking results in an interactive mind map for better visualization and understanding.
+
+## How It Works
+1. **Voice Input**: The user speaks into the system.
+2. **Speech-to-Text Processing**: The system transcribes the speech into text.
+3. **Fact Verification**: The transcribed text is checked against multiple sources for accuracy.
+4. **Mind Map Generation**: Verified data and insights are visually structured in a mind map format.
+
+## Technologies Used
+- **Voice Recognition**: Google Speech-to-Text, Whisper AI, or any other suitable library.
+- **Fact-Checking API**: OpenAI, Google Fact Check Tools, or other reliable databases.
+- **Mind Map Visualization**: D3.js, MindMeister API, or custom visualization techniques.
+
+## Installation
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/sunyxedu/AI_Fact_Checker
+   cd your-repo
+   ```
+2. Install dependencies:
+   ```bash
+   see file DEPENDENCIES
+   ```
+3. Run the application:
+   ```bash
+   python runner.py
+   ```
+
+## Usage
+- Start the application and use voice commands to input statements.
+- The system will process and verify the information.
+- View results as a structured mind map.
+
+## Contribution
+Feel free to contribute by submitting pull requests or reporting issues.
+
+## License
+This project is licensed under the MIT License.
