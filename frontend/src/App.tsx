@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation, useParams } from 'react-router-dom';
 import FlowComponent from './FlowComponent';
 import NestedFlowComponent from './NestedFlowComponent';
 import DoubleNestedFlowComponent from './DoubleNestedFlowComponent';
@@ -79,7 +79,39 @@ function DoubleNestedNodePage({ data }: DoubleNestedNodePageProps) {
   );
 }
 
+function UrlInputForm() {
+  const navigate = useNavigate();
+  const [url, setUrl] = useState('');
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (url) {
+      const encodedUrl = encodeURIComponent(url);
+      navigate(`/analyze/${encodedUrl}`);
+    }
+  };
+
+  return (
+    <div className="url-input-container">
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={url}
+          onChange={(e) => setUrl(e.target.value)}
+          placeholder="Enter YouTube URL"
+          className="url-input"
+        />
+        <button type="submit" className="analyze-button">
+          Analyze
+        </button>
+      </form>
+    </div>
+  );
+}
+
 function AnimatedRoutes() {
+  const location = useLocation();
+  const params = useParams();
   const [jsonLvl1, setJsonLvl1] = useState({
     nodes: [],
     names: [],
@@ -109,11 +141,11 @@ function AnimatedRoutes() {
     videoUrl: ""
   });
 
-  const location = useLocation();
-  
-  const fetchJsonLvl1 = async () => {
+  const [youtubeUrl, setYoutubeUrl] = useState('');
+
+  const fetchJsonLvl1 = async (url: string) => {
     try {
-      const response = await fetch('http://localhost:5000/misinformation/');
+      const response = await fetch(`http://localhost:5000/misinformation/${encodeURIComponent(url)}`);
       const data = await response.json();
       setJsonLvl1(data);
     } catch (error) {
@@ -144,7 +176,7 @@ function AnimatedRoutes() {
     }
   };
 
-  const fetchTitleData = async () => {
+  const fetchTitleData = async (url: string) => {
     try {
       const [titleRes, urlRes] = await Promise.all([
         fetch('http://localhost:5000/lvl_2_title'),
@@ -164,28 +196,28 @@ function AnimatedRoutes() {
   };
 
   useEffect(() => {
-    fetchJsonLvl1();
-    fetchJsonLvl2(0);
-    fetchJsonLvl3(0);
-    fetchTitleData();
+    if (params['*']) {
+      const decodedUrl = decodeURIComponent(params['*'] || '');
+      setYoutubeUrl(decodedUrl);
+      fetchTitleData(decodedUrl);
+      fetchJsonLvl1(decodedUrl);
+    }
   }, [location.pathname]);
 
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
-        <Route 
-          path=  "/" 
-          element={
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <FlowComponent data={jsonLvl1} title={titleData}/>
-            </motion.div>
-          } 
-        />
+        <Route path="/" element={<UrlInputForm />} />
+        <Route path="/analyze/*" element={
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <FlowComponent data={jsonLvl1} title={titleData}/>
+          </motion.div>
+        } />
         <Route 
           path="/misinformation/:nodeId" 
           element={

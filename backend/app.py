@@ -3,6 +3,7 @@ from flask_cors import CORS
 from flask_caching import Cache
 import os
 from dotenv import load_dotenv
+from urllib.parse import unquote
 
 from main import get_app_data, AppData
 
@@ -25,11 +26,11 @@ load_dotenv()  # Load .env file
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
 
-@app.route("/misinformation/<youtube_url>/")
+@app.route('/misinformation/<path:youtube_url>')
 @cache.cached(timeout=None)
 def get_misinformation(youtube_url: str):
-    app_data = get_app_data(youtube_url)
-
+    decoded_url = unquote(youtube_url)
+    app_data = get_app_data(decoded_url)
     return jsonify(app_data.misinformation_graph)
 
 
