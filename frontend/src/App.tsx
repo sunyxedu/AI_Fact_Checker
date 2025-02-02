@@ -4,6 +4,11 @@ import NestedFlowComponent from './NestedFlowComponent';
 import DoubleNestedFlowComponent from './DoubleNestedFlowComponent';
 import { useNavigate } from 'react-router-dom';
 import { AnimatePresence, motion } from 'framer-motion';
+import { useState, useEffect } from 'react';
+import React from 'react';
+
+
+
 
 const exampleJson = {
   nodes: [1,2,3,4,5,6,7,8,9],
@@ -11,6 +16,7 @@ const exampleJson = {
   severity: [1,2,3,4,5,1,2,3,1],
   edges: []
 };
+
 
 const exampleJson2 = {
   nodes: [1,2,3,4,5,6],
@@ -54,8 +60,83 @@ function DoubleNestedNodePage({ data }: NestedNodePageProps) {
 }
 
 function AnimatedRoutes() {
+  const [jsonLvl1, setJsonLvl1] = useState({
+    nodes: [],
+    node_names: [],
+    severity: [],
+    edges: []
+  });
+
+  const [jsonLvl2, setJsonLvl2] = useState({
+    nodes: [],
+    node_names: [],
+    severity: [],
+    edges: [],
+    node_name: []
+  });
+
+  const [jsonLvl3, setJsonLvl3] = useState({
+    nodes: [],
+    node_names: [],
+    severity: [],
+    edges: [],
+    node_name: [],
+    link: []
+  });
+
+  const [titleData, setTitleData] = useState({
+    header: ""
+  });
+
   const location = useLocation();
   
+  const fetchJsonLvl1 = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/node_lvl_1');
+      const data = await response.json();
+      setJsonLvl1(data);
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
+
+  const fetchJsonLvl2 = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/node_lvl_2');
+      const data = await response.json();
+      setJsonLvl2(data);
+    } catch (error) {
+      console.error('Error fetching level 2 data:', error);
+    }
+  };
+
+  const fetchJsonLvl3 = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/node_lvl_3');
+      const data = await response.json();
+      setJsonLvl3(data);
+    } catch (error) {
+      console.error('Error fetching level 3 data:', error);
+    }
+  };
+
+  const fetchTitleData = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/lvl_2_title');
+      const data = await response.json();
+      setTitleData(data);
+    } catch (error) {
+      console.error('Error fetching title data:', error);
+    }
+  };
+
+  useEffect(() => {
+    fetchJsonLvl1();
+    fetchJsonLvl2();
+    fetchJsonLvl3();
+    fetchTitleData();
+  }, [location.pathname]);
+
   return (
     <AnimatePresence mode='wait'>
       <Routes location={location} key={location.pathname}>
@@ -68,7 +149,7 @@ function AnimatedRoutes() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <FlowComponent data={exampleJson} title={exampleTitle}/>
+              <FlowComponent data={jsonLvl1} title={titleData}/>
             </motion.div>
           } 
         />
@@ -81,7 +162,7 @@ function AnimatedRoutes() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <NestedNodePage data={exampleJson2} />
+              <NestedNodePage data={jsonLvl2} />
             </motion.div>
           } 
         />
@@ -94,7 +175,7 @@ function AnimatedRoutes() {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <DoubleNestedNodePage data={exampleJson3} />
+              <DoubleNestedNodePage data={jsonLvl3} />
             </motion.div>
           } 
         />
