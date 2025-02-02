@@ -25,19 +25,21 @@ interface FlowComponentProps {
   };
 }
 
-
-
 const nodeTypes = {
   custom: CustomNode,
 };
 
 const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
-  const nodes = jsonData.nodes.map((nodeId, index) => ({
+  if (!jsonData?.nodes || !jsonData.node_names || !jsonData.severity) {
+    return [];
+  }
+
+  const nodes = jsonData.nodes.map((nodeId: number, i: number) => ({
     id: nodeId.toString(),
     type: 'custom',
     position: { x: 0, y: 0 },
     data: {
-      label: jsonData.node_names[index],
+      label: jsonData.node_names[i] || 'Unnamed Node',
       style: {
         backgroundColor: '#000',
         color: 'white',
@@ -45,9 +47,10 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
         height: 120,
         borderRadius: '15%',
         fontSize: '1rem',
-        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        border: `3px solid ${severityDict[jsonData.severity[i] as keyof typeof severityDict] || '#000'}`,
         boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
-      }
+      },
+      severity: jsonData.severity[i] || 0
     }
   }));
 
@@ -97,6 +100,10 @@ export default function FlowComponent({
 
   const initialNodes = createNodes(data);
   const initialEdges = createEdges(data);
+
+  if (!data?.nodes || !data.node_names || !data.severity) {
+    return <div>Loading...</div>;
+  }
 
   return (
     <div style={{ 
