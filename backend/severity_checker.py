@@ -1,3 +1,5 @@
+from article_finder import Article
+
 from statement_extractor import Statement
 from dataclasses import dataclass
 from typing import List, Tuple
@@ -64,9 +66,9 @@ def Agent(text: str) -> float:
     
 def check_severity(fact_checked_statements: List[Statement], article: List[List[Article]]) -> List[Tuple[float, OriginDAG]]:
     res = []
-    for statement in fact_checked_statements:
+    for i, statement in enumerate(fact_checked_statements):
         severity = Agent(statement.text)
-        dag = correlation_graph(statement.text, article)
+        dag = correlation_graph(statement.text, article[i])
         res.append(severity, dag)
     return res
     # for each statement:

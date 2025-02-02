@@ -1,13 +1,16 @@
+from article_finder import Article
+
 import openai
 from dotenv import load_dotenv
 import os
 import json
 from openai import OpenAI
+from typing import List
 
 load_dotenv()
 openai.api_key = os.getenv('OPENAI_API_KEY')
 
-def correlation_graph(check, data):
+def correlation_graph(check, data: List[Article]):
     # Sort articles by timestamp
     data = sorted(data, key=lambda x: x.timestamp)
     
