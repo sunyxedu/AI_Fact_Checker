@@ -1,9 +1,10 @@
-import React from 'react';
-import ReactFlow, { Controls, Background, Node, Edge } from 'reactflow';
+import React, { useState, useCallback, useEffect } from 'react';
+import ReactFlow, { Controls, Background, Node, Edge, applyNodeChanges, useReactFlow, ReactFlowProvider } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY } from 'd3-force';
 import { useNavigate } from 'react-router-dom';
 import CustomNode from './CustomNode';
+import CenteredArrowEdge from './CenteredArrowEdge';
 
 
 const severityDict: { [key: number]: string } = {
@@ -55,7 +56,7 @@ const createNodes = (jsonData: FlowComponentProps['data']): Node[] => {
 
   // Create force simulation
   forceSimulation(nodes as any)
-    .force('charge', forceManyBody().strength(-15000)) //this is the level of repulsion between nodes
+    .force('charge', forceManyBody().strength(-1500)) //this is the level of repulsion between nodes
     .force('link', forceLink(links).id(d => (d as any).id).distance(300))
     .force('collide', forceCollide().radius(100).strength(1)) //this makes it so that each node acts as a body of mass to prevent intersections
     .force('x', forceX().strength(0.02))
@@ -74,6 +75,8 @@ const createEdges = (jsonData: FlowComponentProps['data']): Edge[] => {
     id: `edge-${source}-${target}-${index}`,
     source: source.toString(),
     target: target.toString(),
+    sourceHandle: 'center',
+    targetHandle: 'center',
     style: {
       stroke: '#fff',
       strokeWidth: 2,
@@ -85,26 +88,42 @@ const createEdges = (jsonData: FlowComponentProps['data']): Edge[] => {
 
 export default function NestedFlowComponent({ data }: FlowComponentProps) {
   const navigate = useNavigate();
+  const [nodes, setNodes] = useState<Node[]>([]);
+
+  // Initialize nodes and fit view
+  useEffect(() => {
+    const initializedNodes = createNodes(data);
+    setNodes(initializedNodes);
+  }, [data]);
 
   const handleNodeClick = (event: React.MouseEvent, node: Node) => {
     navigate(`subnode/${node.id}`);
   };
 
-  const initialNodes = createNodes(data);
+  const onNodesChange = useCallback(
+    (changes) => setNodes((nds) => applyNodeChanges(changes, nds)),
+    []
+  );
+
   const initialEdges = createEdges(data);
 
   return (
     <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
-      <ReactFlow 
-        nodes={initialNodes}
-        edges={initialEdges}
-        nodeTypes={nodeTypes}
-        onNodeClick={handleNodeClick}
-        fitView
-      >
-        <Background color="#404040" gap={44} size={4} />
-        <Controls />
-      </ReactFlow>
+      <ReactFlowProvider>
+        <ReactFlow 
+          nodes={nodes}
+          edges={initialEdges}
+          nodeTypes={nodeTypes}
+          onNodesChange={onNodesChange}
+          onNodeClick={handleNodeClick}
+          onInit={(instance) => instance.fitView()}
+          fitView
+          nodesDraggable={true}
+        >
+          <Background color="#404040" gap={44} size={4} />
+          <Controls />
+        </ReactFlow>
+      </ReactFlowProvider>
       <button onClick={() => navigate(-1)}>Back</button>
     </div>
   );

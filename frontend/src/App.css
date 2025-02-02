@@ -40,3 +40,52 @@
 .read-the-docs {
   color: #888;
 }
+
+.header-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  background: #1a1a1a;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  z-index: 1000;
+}
+
+.dropdown {
+  position: relative;
+  margin-right: 2rem;
+}
+
+.dropdown-toggle {
+  background: #404040;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.dropdown-toggle:hover {
+  background: #505050;
+}
+
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  background: #2a2a2a;
+  border: 1px solid #404040;
+  border-radius: 4px;
+  padding: 1rem;
+  min-width: 200px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+.dropdown-menu p {
+  color: white;
+  margin: 0.5rem 0;
+}
