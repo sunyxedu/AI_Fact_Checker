@@ -80,7 +80,10 @@ def fact_check(statements: List[Statement]) -> List[float]:
         return result["is_historical"]
 
     truth_scores = []
+    id = 0
     for statement in statements:
+        print(f"-------TEST {id}-------")
+        id += 1
         is_trivial, trivial_score = check_trivial(statement.text)
         
         if is_trivial:

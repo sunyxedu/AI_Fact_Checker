@@ -110,21 +110,28 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
             seen.add(s)
             unique_statements.append(s)
             pos = str.find(s)
-            if pos != -1:
-                statements_with_positions.append((s, pos))
+            statements_with_positions.append((s, pos))
                 
+    
+    # print(statements_with_positions)
     # Sort statements by position
     # print(unique_statements)
     statements_with_positions.sort(key=lambda x: x[1])
-    print(statements_with_positions)
+    # print(statements_with_positions)
     # unique_statements = [s[0] for s in statements_with_positions]
-    
-    
+    # print(statements_clarified)
     acc = ""
     statements_with_timestamps = []
     id = 0
+    # print("------------------TEST------------------")
+    # print(len(statements_with_positions), len(statements_clarified))
     for QwQ in ls:
+        print(id)
         acc = acc + QwQ[1] + " "
+        if statements_with_positions[id][1] == -1:
+            id += 1 
+            if (id == len(statements_with_positions)):
+                break
         if (len(acc) > statements_with_positions[id][1]):
             statements_with_timestamps.append(Statement(statements_clarified[id], QwQ[0]))
             id += 1
