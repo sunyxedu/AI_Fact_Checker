@@ -1,61 +1,57 @@
-from statement_extractor import Statement
-
-from bs4 import BeautifulSoup
-from googlesearch import search
-from dataclasses import dataclass
+import argparse
 import requests
-from typing import List
+from datetime import datetime
 
-@dataclass
-class Article:
-    timestamp: str
-    contents: str
-    name: str
-    url: str
-
-def get_date_from_url(url):
+def find_articles(statement, num_results=10, before_date=None):
+    base_url = "https://www.googleapis.com/customsearch/v1"
+    params = {
+        'key': "AIzaSyCcLt-9ysm5wwQvNAR_eFgpJs7Lrfb5xyo",
+        'cx': "f7daf3352d60240f2",
+        'q': statement,
+        'num': num_results
+    }
+    
+    # Add date filter if provided
+    if before_date:
+        # Calculate days between today and before_date to get maximum article age
+        today = datetime.now().date()
+        days_diff = (today - before_date).days
+        # Use dateRestrict to find articles OLDER than this date
+        params['sort'] = 'date:r:1970:' + before_date.strftime('%Y%m%d')
+    
     try:
-        # Send a request to the URL
-        response = requests.get(url)
-        soup = BeautifulSoup(response.content, 'html.parser')
-
-        # Try to find the date in common meta tags (e.g., 'article:published_time', 'date', 'pubdate')
-        date = None
-        for meta in soup.find_all('meta'):
-            if meta.get('property') == 'article:published_time' or meta.get('name') == 'date' or meta.get('name') == 'pubdate':
-                date = meta.get('content')
-                break
-
-        # If no date is found in meta tags, look for other possible locations like <time> tag
-        if not date:
-            time_tag = soup.find('time')
-            if time_tag:
-                date = time_tag.get('datetime')
-
-        if not date:
-            date = 'Date not found'
-
-        return date
+        response = requests.get(base_url, params=params)
+        response.raise_for_status()
+        results = response.json()
+        
+        articles = []
+        if 'items' in results:
+            for item in results['items']:
+                article = {
+                    'title': item.get('title', 'No title'),
+                    'link': item.get('link', '#'),
+                    'snippet': item.get('snippet', 'No description')
+                }
+                articles.append(article)
+        return articles
     except Exception as e:
-        return f"Error retrieving date: {e}"
+        print(f"Error searching articles: {e}")
+        return []
 
-def find_articles(statement, num_results=10):
-    headers = {"User-Agent": "Mozilla/5.0"}
-    url = f"https://duckduckgo.com/html/?q={statement}&num={num_results}"
+def main():
+    parser = argparse.ArgumentParser(description='Find relevant articles for a statement')
+    parser.add_argument('statement', type=str, help='Statement to research')
+    parser.add_argument('--before', type=lambda s: datetime.strptime(s, '%Y-%m-%d').date(),
+                       help='Filter articles by date (format: YYYY-MM-DD)')
+    args = parser.parse_args()
+    
+    articles = find_articles(args.statement, before_date=args.before)
+    
+    print(f"\nFound {len(articles)} results for: '{args.statement}'\n")
+    for i, article in enumerate(articles, 1):
+        print(f"{i}. {article['title']}")
+        print(f"   URL: {article['link']}")
+        print(f"   Description: {article['snippet']}\n")
 
-    response = requests.get(url, headers=headers)
-    soup = BeautifulSoup(response.text, 'html.parser')
-
-    results = []
-    for item in soup.find_all('a', class_='result__a'):
-        link = item['href']
-        title = item.text
-        # date = get_date_from_url(link)  # Extract date from the article link
-
-        results.append((link, title))
-
-    return results
-   
-
-if __name__=="__main__":
-    find_articles("Testing testing")
+if __name__ == "__main__":
+    main()
