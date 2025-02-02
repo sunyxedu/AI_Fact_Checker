@@ -87,10 +87,12 @@ def fact_check(statements: List[Statement]) -> List[float]:
         is_trivial, trivial_score = check_trivial(statement.text)
         
         if is_trivial:
+            print("GOOD LLM")
             truth_scores.append(trivial_score)
             continue
             
         if check_historical(statement.text):
+            print("SHIT WIKIPEDIA")
             # Try to find relevant Wikipedia articles
             try:
                 # Search Wikipedia for relevant pages
@@ -120,7 +122,7 @@ def fact_check(statements: List[Statement]) -> List[float]:
                 
                 # Use LLM to verify statement against Wikipedia content
                 response = client.chat.completions.create(
-                    model="gpt-4",
+                    model="gpt-4o",
                     messages=[
                         {"role": "system", "content": "You are an expert historian tasked with verifying historical claims against Wikipedia sources. If the claim seems vague or cannot be definitively verified with the provided sources, indicate this in your assessment."},
                         {"role": "user", "content": f"Verify this historical claim against the following Wikipedia content. Claim: {statement.text}\n\nWikipedia content: {articles_content}"}
@@ -214,6 +216,7 @@ def fact_check(statements: List[Statement]) -> List[float]:
                 result = json.loads(response.choices[0].message.function_call.arguments)
                 truth_scores.append(result["truthiness"])
         else:
+            print("FUCKING GOOGLE")
             articles = find_articles(statement.text)
             articles_content = "\n\n".join([f"Title: {article.title}\nContent: {article.text}" for article in articles])
             
