@@ -55,7 +55,7 @@ const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] =
 
   // Create force simulation
   forceSimulation(nodes as any)
-    .force('charge', forceManyBody().strength(-1500)) //this is the level of repulsion between nodes
+    .force('charge', forceManyBody().strength(-15000)) //this is the level of repulsion between nodes
     .force('link', forceLink(links).id(d => (d as any).id).distance(300))
     .force('collide', forceCollide().radius(100).strength(1)) //this makes it so that each node acts as a body of mass to prevent intersections
     .force('x', forceX().strength(0.02))
