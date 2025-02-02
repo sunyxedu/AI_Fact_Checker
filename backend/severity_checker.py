@@ -69,7 +69,7 @@ def check_severity(fact_checked_statements: List[Statement], article: List[List[
     for i, statement in enumerate(fact_checked_statements):
         severity = Agent(statement.text)
         dag = correlation_graph(statement.text, article[i])
-        res.append(severity, dag)
+        res.append((severity, dag))
     return res
     # for each statement:
     #   Compute DAG of Articles for Statement <- where we got the statement from

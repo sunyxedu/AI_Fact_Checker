@@ -50,7 +50,7 @@ def fact_check(statements: List[Statement]) -> List[float]:
             function_call={"name": "analyze_statement"}
         )
         result = json.loads(response.choices[0].message.function_call.arguments)
-        return result["is_trivial"], result["truthiness"]
+        return result["is_trivial"] if "is_trivial" in result else False, result["truthiness"] if "truthiness" in result else 0.5
 
     def check_historical(statement: str) -> bool:
         """Returns whether statement is about historical events"""

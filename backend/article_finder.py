@@ -30,7 +30,7 @@ def extract_date_from_snippet(snippet):
     
     return ""
 
-def find_articles(statement, num_results=50, before_date=None):
+def find_articles(statement, num_results=20, before_date=None):
     base_url = "https://www.googleapis.com/customsearch/v1"
     articles = []
     results_per_page = 10  # Google's max per request

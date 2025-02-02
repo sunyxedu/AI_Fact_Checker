@@ -42,7 +42,7 @@ def correlation_graph(check, data: List[Article]):
                     "properties": {
                         "publisher": {
                             "type": "string",
-                            "description": "The publisher name (Unknown if not found)"
+                            "description": "The publisher name (Unknown if not found)."
                         },
                         "severity": {
                             "type": "integer", 
@@ -78,7 +78,7 @@ def correlation_graph(check, data: List[Article]):
                 model="gpt-4o",
                 messages=[
                     {"role": "system", "content": "You are a correlation analyzer."},
-                    {"role": "user", "content": f"Is there a correlation between these two articles about {check}? First article: {info_i}, Second article: {info_j}. Respond with only 'yes' or 'no'."}
+                    {"role": "user", "content": f"Is there a correlation between these two articles about {check}? First article: {info_i}, Second article: {info_j}. Respond with only 'yes' or 'no'. Be open minded and appreciative of small links between them."}
                 ]
             )
             
