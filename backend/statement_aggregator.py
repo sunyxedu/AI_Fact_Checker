@@ -103,5 +103,5 @@ def aggregate_statements(statements: List[Statement], truth_scores: List[float],
     return misinformation_list
 
 if __name__ == "__main__":
-    statements = extract_statements("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    statements = extract_statements("https://www.youtube.com/watch?v=ShRYdYTtIx8")
     print(statements)

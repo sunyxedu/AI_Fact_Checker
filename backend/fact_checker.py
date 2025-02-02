@@ -1,4 +1,4 @@
-from statement_extractor import Statement
+from statement_extractor import Statement, extract_statements
 from article_finder import find_articles, Article
 from dataclasses import dataclass
 from typing import List
@@ -242,3 +242,7 @@ def fact_check(statements: List[Statement]) -> List[float]:
             truth_scores.append(result["truthiness"])
             
     return truth_scores
+
+if __name__ == "__main__":
+    statements = extract_statements("https://www.youtube.com/watch?v=ShRYdYTtIx8")
+    print(fact_check(statements))
