@@ -203,9 +203,9 @@ def fact_check(statements: List[Statement]) -> List[float]:
                             "properties": {
                                 "truthiness": {
                                     "type": "number",
-                                    "description": "Truth score between 0 and 1",
-                                    "minimum": 0,
-                                    "maximum": 1
+                                    "description": "Truth score between 0.1 and 0.9",
+                                    "minimum": 0.1,
+                                    "maximum": 0.9
                                 }
                             },
                             "required": ["truthiness"]
