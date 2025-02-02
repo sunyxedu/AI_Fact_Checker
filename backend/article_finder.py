@@ -70,6 +70,8 @@ def find_articles(statement, num_results=20, before_date=None):
                     # If no metadata timestamp, try extracting from the snippet text.
                     if not timestamp:
                         timestamp = extract_date_from_snippet(snippet)
+                    else:
+                        timestamp = timestamp[:10]
                     
                     articles.append(Article(url=link, text=snippet, title=title, timestamp=timestamp))
                 

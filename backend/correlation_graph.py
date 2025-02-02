@@ -48,9 +48,13 @@ def correlation_graph(check, data: List[Article]):
                             "type": "integer", 
                             "description": "Misinformation severity rating from 1-5",
                             "enum": [1, 2, 3, 4, 5]
+                        },
+                        "summary": {
+                            "type": "string",
+                            "description": "A 3-6 word summary of the misinformation in the article"
                         }
                     },
-                    "required": ["publisher", "severity"]
+                    "required": ["publisher", "severity", "summary"]
                 }
             }],
             function_call={"name": "analyze_misinformation"}
@@ -59,11 +63,13 @@ def correlation_graph(check, data: List[Article]):
         function_call_response = response.choices[0].message.function_call.arguments
         result_analysis = json.loads(function_call_response)
         publisher = result_analysis["publisher"]
-        print(publisher)
+        summary = result_analysis["summary"]
+        print(summary)
         severity = int(result_analysis["severity"])
         
         result["nodes"].append(i)
-        result["nodename"].append(f"{publisher}\n{data[i].timestamp}")
+        result["nodename"].append(f"{summary}\n{data[i].timestamp}")
+        result["url"] = data[i].url
         result["severity"].append(severity)
     
     # Find correlations and build edge relationships
@@ -86,7 +92,7 @@ def correlation_graph(check, data: List[Article]):
             
             if correlation == "yes":
                 result["edge"].append([i, j])
-    print(json.dumps(result, indent=2))
+    # print(json.dumps(result, indent=2))
     return result
 
 if __name__ == "__main__":
@@ -103,4 +109,4 @@ if __name__ == "__main__":
         Article("2024-01-03", "Bloomberg Major investment firm launches Bitcoin ETF"),
         Article("2024-01-04", "Cryptocurrency market sees increased volatility")
     ])
-    print(json.dumps(result, indent=2))
+    # print(json.dumps(result, indent=2))

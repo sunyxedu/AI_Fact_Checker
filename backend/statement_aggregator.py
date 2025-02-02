@@ -110,7 +110,7 @@ def aggregate_statements(statements: List[Statement],
         response = client.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "Summarize these related statements into a concise summary."},
+                {"role": "system", "content": "Summarize these related statements into a concise 3-6 word summary."},
                 {"role": "user", "content": cluster_texts}
             ]
         )
@@ -137,7 +137,11 @@ if __name__ == "__main__":
 
     # Retrieve articles for each low-truth statement
     articles = [find_articles(statement) for statement in low_truth]
-    severity_scores, dags = zip(*check_severity(low_truth, articles))
-
+    severity = check_severity(low_truth, articles)
+    print(severity)
+    severity_scores, dags = zip(*severity)
+    print("dags")
+    print(dags)
     aggregated = aggregate_statements(low_truth, low_truth_truth_scores, severity_scores)
+    print("aggregated")
     print(aggregated)

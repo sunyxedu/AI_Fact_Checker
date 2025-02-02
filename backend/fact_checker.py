@@ -25,7 +25,7 @@ def fact_check(statements: List[Statement]) -> List[float]:
             model="gpt-4o",
             messages=[
                 {"role": "system", "content": "You are an expert at determining if statements are trivially true/false or require deeper fact checking."},
-                {"role": "user", "content": f"Is this statement trivially true/false or does it require deeper fact checking? If trivial, what is the truthiness (0-1)?\n\nStatement: {statement}"}
+                {"role": "user", "content": f"Is this statement trivially true/false or does it require deeper fact checking? If trivial, what is the truthiness (0.1-0.9)?\n\nStatement: {statement}"}
             ],
             functions=[{
                 "name": "analyze_statement",
@@ -39,9 +39,9 @@ def fact_check(statements: List[Statement]) -> List[float]:
                         },
                         "truthiness": {
                             "type": "number",
-                            "description": "If trivial, truthiness between 0-1",
-                            "minimum": 0,
-                            "maximum": 1
+                            "description": "If trivial, truthiness between 0.1-0.9",
+                            "minimum": 0.1,
+                            "maximum": 0.9
                         }
                     },
                     "required": ["is_trivial", "truthiness"]
@@ -135,9 +135,9 @@ def fact_check(statements: List[Statement]) -> List[float]:
                             "properties": {
                                 "truthiness": {
                                     "type": "number",
-                                    "description": "Truth score between 0 and 1",
-                                    "minimum": 0,
-                                    "maximum": 1
+                                    "description": "Truth score between 0.1 and 0.9",
+                                    "minimum": 0.1,
+                                    "maximum": 0.9
                                 },
                                 "is_vague": {
                                     "type": "boolean",
@@ -170,9 +170,9 @@ def fact_check(statements: List[Statement]) -> List[float]:
                                 "properties": {
                                     "truthiness": {
                                         "type": "number",
-                                        "description": "Truth score between 0 and 1",
-                                        "minimum": 0,
-                                        "maximum": 1
+                                        "description": "Truth score between 0.1 and 0.9",
+                                        "minimum": 0.1,
+                                        "maximum": 0.9
                                     }
                                 },
                                 "required": ["truthiness"]
@@ -234,9 +234,9 @@ def fact_check(statements: List[Statement]) -> List[float]:
                         "properties": {
                             "truthiness": {
                                 "type": "number",
-                                "description": "Truth score between 0 and 1",
-                                "minimum": 0,
-                                "maximum": 1
+                                "description": "Truth score between 0.1 and 0.9",
+                                "minimum": 0.1,
+                                "maximum": 0.9
                             }
                         },
                         "required": ["truthiness"]

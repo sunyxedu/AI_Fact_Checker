@@ -55,9 +55,28 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
     
     response = client.chat.completions.create(
         model="gpt-4o",
+        # messages=[
+        #     {"role": "system", "content": "You are an expert at extracting factual statements from text."},
+        #     {"role": "user", "content": f"Extract all statements and assertions from this transcript. Return each one exactly as written, along with a clarified version if needed. The output should be a list where each item contains:\n1. 'Original': the extracted statement\n2. 'Clarified': the statement with missing context added for better understanding, if needed. If no clarification is needed, keep it the same.\n\nNow extract statements from this transcript: {str}"}
+        # ],
         messages=[
-            {"role": "system", "content": "You are an expert at extracting factual statements from text."},
-            {"role": "user", "content": f"Extract factual statements from this transcript. Return each one exactly as written, along with a clarified version if needed. The output should be a list where each item contains:\n1. 'Original': the extracted statement\n2. 'Clarified': the statement with missing context added for better understanding, if needed. If no clarification is needed, keep it the same.\n\nNow extract statements from this transcript: {str}"}
+            {"role": "system", "content": "You are an expert at extracting all misinformation, and statements from text, without filtering or judging their accuracy."},
+            {"role": "user", "content": f"""
+            Extract **all controversial, confusing or dubious statements and misinformation** from this transcript exactly as written. Do not filter based on whether you think they are true or false.
+            Instead, filter exclusively based on how confusing, controversial or dubious they are (they need to be further evaluated).
+             
+            The output should be a structured list where each item contains:
+            1. **'Original'**: The exact extracted statement.
+            2. **'Clarified'**: The statement with missing context added for better understanding. If no clarification is needed, keep it the same. The clarified statement should contain enough information by itself to evaluate it.
+
+            **Rules:**
+            - Extract all **declarative statements**, opinions, and assertions.
+            - **Do not exclude** statements that seem untrue, misleading, or exaggerated.
+            - If the statement lacks context, **add minimal necessary clarification** in the 'Clarified' field, but do not alter its meaning.
+
+            Now extract statements from this transcript:
+            {str}
+            """}
         ],
         functions=[{
             "name": "extract_statements",
@@ -94,13 +113,8 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
     result = json.loads(function_call_response)
     statements_text = [statement["original"] for statement in result["statements"]]
     statements_clarified = [statement["clarified"] for statement in result["statements"]]
-    # print(statements_text)
-    # print("-------")
-    sentences = statements_text
 
-    # print("-------SENTENCES-------")
-    # for sentence in sentences:
-    #     print(sentence)
+    sentences = statements_text
 
     seen = set()
     unique_statements = []
@@ -111,22 +125,13 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
             unique_statements.append(s)
             pos = str.find(s)
             statements_with_positions.append((s, pos))
-                
-    
-    # print(statements_with_positions)
-    # Sort statements by position
-    # print(unique_statements)
+
     statements_with_positions.sort(key=lambda x: x[1])
-    # print(statements_with_positions)
-    # unique_statements = [s[0] for s in statements_with_positions]
-    # print(statements_clarified)
     acc = ""
     statements_with_timestamps = []
     id = 0
-    # print("------------------TEST------------------")
-    # print(len(statements_with_positions), len(statements_clarified))
+
     for QwQ in ls:
-        print(id)
         acc = acc + QwQ[1] + " "
         if statements_with_positions[id][1] == -1:
             id += 1 
