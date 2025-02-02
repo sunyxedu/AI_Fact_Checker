@@ -4,6 +4,7 @@ from dataclasses import dataclass
 from typing import List
 from sklearn.cluster import KMeans
 import numpy as np
+from statement_extractor import extract_statements
 
 @dataclass
 class Misinformation:
@@ -58,7 +59,6 @@ def aggregate_statements(statements: List[Statement], truth_scores: List[float],
         cluster_truths = [s for s, m in zip(truth_scores, cluster_mask) if m]
         cluster_severities = [s for s, m in zip(severity_scores, cluster_mask) if m]
         
-        # Generate summary for cluster using GPT
         cluster_texts = " ".join([s.text for s in cluster_statements])
         response = client.chat.completions.create(
             model="gpt-4o",
@@ -78,3 +78,7 @@ def aggregate_statements(statements: List[Statement], truth_scores: List[float],
         misinformation_list.append(misinformation)
     
     return misinformation_list
+
+if __name__ == "__main__":
+    statements = extract_statements("https://www.youtube.com/watch?v=dQw4w9WgXcQ")
+    print(statements)
