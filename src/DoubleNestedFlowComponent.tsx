@@ -103,7 +103,7 @@ export default function DoubleNestedFlowComponent({ data }: DoubleNestedFlowComp
         onNodeClick={handleNodeClick}
         fitView
       >
-        <Background color="#404040" gap={24} />
+        <Background color="#404040" gap={44} size={4} />
         <Controls />
       </ReactFlow>
     </div>

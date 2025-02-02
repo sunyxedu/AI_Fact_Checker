@@ -14,8 +14,8 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-  --bg-dark: #0f172a;
-  --bg-medium: #1e293b;
+  --bg-dark: #1a1a1a;
+  --bg-medium: #404040;
   --accent: #818cf8;
   --text-primary: #f8fafc;
   --gradient: linear-gradient(145deg, #6366f1 0%, #a855f7 50%, #ec4899 100%);
@@ -181,49 +181,59 @@ button:focus-visible {
 
 /* Modern header styling */
 #header-component {
-  /* Maintain circular ends */
-  border-radius: 999px;
-  padding: 12px 32px; /* Original padding for circular shape */
-  
-  /* Increased transparency */
-  background: rgba(173, 216, 230, 0.25); /* Reduced alpha from 0.3 to 0.25 */
-  
-  /* Subtle white glow */
-  box-shadow: 
-    0 0 15px rgba(255, 255, 255, 0.2),
-    0 4px 30px rgba(255, 255, 255, 0.1);
-  
-  /* Stronger blur effect */
-  backdrop-filter: blur(15px) saturate(180%);
-  -webkit-backdrop-filter: blur(15px) saturate(180%);
-  
-  /* Rest of the styles */
-  position: absolute;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
+  /* Full-width navbar positioning */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  width: 100vw;
+  height: 60px;
+  transform: none !important;
   z-index: 1000;
-  font-family: 'Inter', sans-serif;
-  font-weight: 600;
-  color: var(--text-primary);
-  text-align: center;
-  max-width: 80%;
+  /* Light gray with increased transparency */
+  background: rgba(85, 73, 73, 0.15); /* Light gray base */
+  
+  /* Enhanced blur effect */
+  backdrop-filter: blur(12px) saturate(180%);
+  -webkit-backdrop-filter: blur(12px) saturate(180%);
+  
+  /* Light theme borders */
+  border-bottom: 1px solid rgba(39, 36, 36, 0.2);
+  box-shadow: 0 2px 20px rgba(255, 255, 255, 0.1);
+  
+  /* Light text for contrast */
+  color: rgba(255, 255, 255, 0.95);
+  
+  /* Text alignment */
+  display: flex;
+  align-items: center;
+  padding: 0 2rem;
+  border-radius: 0;
+  font-size: 1.25rem;
   white-space: nowrap;
   overflow: hidden;
-  text-overflow: ellipsis;
-  transition: all 0.3s ease;
 }
 
-#header-component:hover {
-  background: rgba(173, 216, 230, 0.4);
-  transform: translateX(-50%) scale(1.02);
+/* Optional: Add frost effect */
+#header-component::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.1) 0%,
+    rgba(255, 255, 255, 0.05) 100%
+  );
+  pointer-events: none;
 }
+
+/* Remove hover transformations */
 
 /* Optional: Add glow animation */
-@keyframes header-glow {
-  0%, 100% { box-shadow: 0 0 15px rgba(255, 255, 255, 0.2); }
-  50% { box-shadow: 0 0 25px rgba(255, 255, 255, 0.3); }
-}
+
 
 #header-component {
   animation: header-glow 3s ease-in-out infinite;

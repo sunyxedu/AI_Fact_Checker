@@ -25,9 +25,7 @@ interface FlowComponentProps {
   };
 }
 
-const defaultProps = {
-  title: { title: "Default Title" }
-};
+
 
 const nodeTypes = {
   custom: CustomNode,
@@ -101,7 +99,12 @@ export default function FlowComponent({
   const initialEdges = createEdges(data);
 
   return (
-    <div style={{ width: '100vw', height: '100vh', background: '#1a1a1a' }}>
+    <div style={{ 
+      width: '100vw', 
+      height: '100vh', 
+      background: '#1a1a1a',
+      position: 'relative'
+    }}>
       <h1 id="header-component">{title.header}</h1>
       <ReactFlow 
         nodes={initialNodes}
@@ -109,9 +112,22 @@ export default function FlowComponent({
         nodeTypes={nodeTypes}
         onNodeClick={handleNodeClick}
         fitView
+        style={{
+          paddingTop: '80px', // Space for header
+          paddingBottom: '20px'
+        }}
       >
-        <Background color="#404040" gap={24} />
-        <Controls />
+        <Background 
+         color="#404040" gap={44} size={4} 
+        />
+        <Controls 
+          style={{
+            bottom: 'auto',
+            top: '100px',
+            right: '20px',
+            left: 'auto'
+          }}
+        />
       </ReactFlow>
     </div>
   );

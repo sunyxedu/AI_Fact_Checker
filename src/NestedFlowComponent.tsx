@@ -102,7 +102,7 @@ export default function NestedFlowComponent({ data }: FlowComponentProps) {
         onNodeClick={handleNodeClick}
         fitView
       >
-        <Background color="#404040" gap={24} />
+        <Background color="#404040" gap={44} size={4} />
         <Controls />
       </ReactFlow>
       <button onClick={() => navigate(-1)}>Back</button>
