@@ -147,7 +147,7 @@ function AnimatedRoutes() {
   const fetchTitleData = async () => {
     try {
       const [titleRes, urlRes] = await Promise.all([
-        fetch('http://localhost:5000/lvl_2_title'),
+        fetch('http://localhost:5000/video_title'),
         fetch('http://localhost:5000/video_url')
       ]);
       
