@@ -3,6 +3,7 @@ import ReactFlow, { Controls, Background, Node, Edge } from 'reactflow';
 import 'reactflow/dist/style.css';
 import { forceSimulation, forceManyBody, forceLink, forceCollide, forceX, forceY } from 'd3-force';
 import { useNavigate } from 'react-router-dom';
+import CustomNode from './CustomNode';
 
 
 const severityDict: { [key: number]: string } = {
@@ -22,21 +23,28 @@ interface DoubleNestedFlowComponentProps {
   };
 }
 
+// Add node types configuration
+const nodeTypes = {
+  custom: CustomNode,
+};
+
 const createNodes = (jsonData: DoubleNestedFlowComponentProps['data']): Node[] => {
   const nodes = jsonData.nodes.map((subnodeId, index) => ({
-    id: subnodeId.toString(), //All stuff below is conditional on id = 0 for parent node
-    x: index === 0 ? 0 : Math.random() * 800 - 400, //puts in random position and lets electrostatic repulsion do the rest
-    y: index === 0 ? 0 : Math.random() * 800 - 400,
-    data: { label: jsonData.node_names[index] },
-    style: {
-      backgroundColor: severityDict[jsonData.severity[index] as keyof typeof severityDict],
-      color: 'white',
-      width: 120,
-      height: 120,
-      borderRadius:  '15%',
-      fontSize:  '1rem',
-      border: '2px solid #fff',
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
+    id: subnodeId.toString(),
+    type: 'custom',
+    position: { x: 0, y: 0 },
+    data: {
+      label: jsonData.node_names[index],
+      style: {
+        backgroundColor: '#000',
+        color: 'white',
+        width: 120,
+        height: 120,
+        borderRadius: '15%',
+        fontSize: '1rem',
+        border: `3px solid ${severityDict[jsonData.severity[index] as keyof typeof severityDict]}`,
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.2)'
+      }
     }
   }));
 
@@ -91,6 +99,7 @@ export default function DoubleNestedFlowComponent({ data }: DoubleNestedFlowComp
       <ReactFlow 
         nodes={initialNodes}
         edges={initialEdges}
+        nodeTypes={nodeTypes}
         onNodeClick={handleNodeClick}
         fitView
       >

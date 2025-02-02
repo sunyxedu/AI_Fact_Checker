@@ -13,7 +13,7 @@ const exampleJson = {
 
 const exampleJson2 = {
   nodes: [1,2,3,4,5,6],
-  node_names: ["random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
+  node_names: ["random quote bla blaasdasd asdasdasdasdasdasdasda sdasdasdasdasdasdasdasdasdasd", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla", "random quote bla bla"],
   severity: [1,2,3,4,5,1],
   edges: [[1,2], [1,3], [1,4], [1,5], [1,6]]
 };
@@ -24,6 +24,8 @@ const exampleJson3 = {
   severity: [1,2,3,4,5],
   edges: [[1,2], [2,3], [3,4], [4,5]]
 };
+
+const exampleTitle = {header: "Youtube Video: Trump Inauguration"}
 
 interface NestedNodePageProps {
   data: typeof exampleJson2;
@@ -55,7 +57,7 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/" element={<FlowComponent data={exampleJson} />} />
+        <Route path="/" element={<FlowComponent data={exampleJson} title={exampleTitle}/>} />
         <Route 
           path="/node/:nodeId" 
           element={<NestedNodePage data={exampleJson2} />} 
