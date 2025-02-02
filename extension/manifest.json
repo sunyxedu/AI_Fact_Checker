@@ -1,0 +1,14 @@
+{
+  "manifest_version": 3,
+  "name": "YouTube Fact-Checker",
+  "version": "1.0",
+  "description": "Checks YouTube video content for misinformation",
+  "permissions": ["scripting", "activeTab"],
+  "host_permissions": ["https://www.youtube.com/*"],
+  "background": {
+      "service_worker": "background.js"
+  },
+  "action": {
+      "default_popup": "popup.html"
+  }
+}
