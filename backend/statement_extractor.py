@@ -57,20 +57,30 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
         model="gpt-4o",
         messages=[
             {"role": "system", "content": "You are an expert at extracting factual statements from text."},
-            {"role": "user", "content": f"Extract factual statements from this transcript. Return them exactly as written (Same case, same symbol), one per line. For example, given the transcript:\n\n1. 'xxxxxx'\n2. 'yyyyyy'\n\nNow extract statements from this transcript: {str}"}
+            {"role": "user", "content": f"Extract factual statements from this transcript. Return each one exactly as written, along with a clarified version if needed. The output should be a list where each item contains:\n1. 'Original': the extracted statement\n2. 'Clarified': the statement with missing context added for better understanding, if needed. If no clarification is needed, keep it the same.\n\nNow extract statements from this transcript: {str}"}
         ],
         functions=[{
             "name": "extract_statements",
-            "description": "Extracts factual statements from text",
+            "description": "Extracts factual statements from text and clarifies them if needed",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "statements": {
                         "type": "array",
                         "items": {
-                            "type": "string"
-                        },
-                        "description": "List of extracted factual statements"
+                            "type": "object",
+                            "properties": {
+                                "original": {
+                                    "type": "string",
+                                    "description": "The exact extracted factual statement"
+                                },
+                                "clarified": {
+                                    "type": "string",
+                                    "description": "A clarified version of the statement with missing context added, or the same as 'original' if no clarification is needed"
+                                }
+                            },
+                            "required": ["original", "clarified"]
+                        }
                     }
                 },
                 "required": ["statements"]
@@ -78,10 +88,12 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
         }],
         function_call={"name": "extract_statements"}
     )
+
     # Get statements from LLM response
     function_call_response = response.choices[0].message.function_call.arguments
     result = json.loads(function_call_response)
-    statements_text = result["statements"]
+    statements_text = [statement["original"] for statement in result["statements"]]
+    statements_clarified = [statement["clarified"] for statement in result["statements"]]
     # print(statements_text)
     # print("-------")
     sentences = statements_text
@@ -114,7 +126,7 @@ def extract_statements(youtube_video_url: str) -> List[Statement]:
     for QwQ in ls:
         acc = acc + QwQ[1] + " "
         if (len(acc) > statements_with_positions[id][1]):
-            statements_with_timestamps.append(Statement(statements_with_positions[id][0], QwQ[0]))
+            statements_with_timestamps.append(Statement(statements_clarified[id], QwQ[0]))
             id += 1
             if (id == len(statements_with_positions)):
                 break
